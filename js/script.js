@@ -18,38 +18,16 @@ FSJS project 2 - List Filter and Pagination
    scoped to that function.
 ***/
 
-let pageNumber = 1;
-/*** 
-   Create the `showPage` function to hide all of the items in the 
-   list except for the ten you want to show.
-
-   Pro Tips: 
-     - Keep in mind that with a list of 54 students, the last page 
-       will only display four.
-     - Remember that the first student has an index of 0.
-     - Remember that a function `parameter` goes in the parens when 
-       you initially define the function, and it acts as a variable 
-       or a placeholder to represent the actual function `argument` 
-       that will be passed into the parens later when you call or 
-       "invoke" the function 
-***/
+const $list_ = $('.student-list li');
+let pageNumber_ = 1;
 
 const showPage = ($list, pageNumber) => {
-   
-   console.log($list);
 
    const lastItemNumber = pageNumber * 10;
-   const firstItemNumber = lastItemNumber - 9;
    const lastItemIndex = lastItemNumber - 1;
-   const firstItemIndex = firstItemNumber - 1;
    
-   /*
-   Loop over items in the list parameter
-   -- If the index of a list item is >= the index of the first
-   item that should be shown on the page
-   -- && the list item index is <= the index of the last item
-   that should be shown on the page, show it
-   */
+   const firstItemNumber = lastItemNumber - 9;
+   const firstItemIndex = firstItemNumber - 1;
   
    $list.each(function(index) {
       if (firstItemIndex <= index && index <= lastItemIndex) {
@@ -58,19 +36,31 @@ const showPage = ($list, pageNumber) => {
          $(this).hide();
       }
    });
+
+   appendPageLinks($list);
 };
 
-/*** 
-   Create the `appendPageLinks function` to generate, append, and add 
-   functionality to the pagination buttons.
-***/
+const appendPageLinks = ($list) => {
 
+   const $page = $('div.page');
+   // calculate number of pages (round up for partial pages)
+   const numberOfPages = Math.ceil($list.length / 10);
+   console.log(numberOfPages);
 
-const appendPageLinks = (list) => {
+   $page.append('<div class="pagination"><ul></ul></div>');
+
+   const $paginationUL = $('.pagination ul');
+
+   for (let i = 1; i <= numberOfPages; i++) {
+      const paginationLI = `<li><a href="#">${i}</a></li>`;
+      $paginationUL.append(paginationLI);
+   }
+   
+   /*** 
+      Create the `appendPageLinks function` to generate, append, and add 
+      functionality to the pagination buttons.
+   ***/
 
 };
 
-
-// Remember to delete the comments that came with this file, and replace them with your own code comments.
-
-$(showPage($('.student-list li'), pageNumber));
+$(showPage($list_, pageNumber_));
