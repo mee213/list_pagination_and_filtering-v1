@@ -43,16 +43,26 @@ const showPage = ($list, pageNumber) => {
 const appendPageLinks = ($list) => {
 
    const $page = $('div.page');
+   
    // calculate number of pages (round up for partial pages)
    const numberOfPages = Math.ceil($list.length / 10);
-   console.log(numberOfPages);
 
+   // create and append container for pagination links
    $page.append('<div class="pagination"><ul></ul></div>');
 
    const $paginationUL = $('.pagination ul');
 
+   // create and append pagination links
    for (let i = 1; i <= numberOfPages; i++) {
-      const paginationLI = `<li><a href="#">${i}</a></li>`;
+      
+      // create HTML for each LI, add class="active" only to 1st one
+      if (i = 1) {
+         const paginationLI = `<li><a class="active" href="#">${i}</a></li>`;
+      } else {
+         const paginationLI = `<li><a href="#">${i}</a></li>`;
+      }
+      
+      // append each pagination link
       $paginationUL.append(paginationLI);
    }
    
