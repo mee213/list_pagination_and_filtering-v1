@@ -1,3 +1,4 @@
+'use strict';
 /******************************************
 Treehouse Techdegree:
 FSJS project 2 - List Filter and Pagination
@@ -17,9 +18,7 @@ FSJS project 2 - List Filter and Pagination
    scoped to that function.
 ***/
 
-
-
-
+let pageNumber = 1;
 /*** 
    Create the `showPage` function to hide all of the items in the 
    list except for the ten you want to show.
@@ -35,8 +34,31 @@ FSJS project 2 - List Filter and Pagination
        "invoke" the function 
 ***/
 
+const showPage = ($list, pageNumber) => {
+   
+   console.log($list);
 
-
+   const lastItemNumber = pageNumber * 10;
+   const firstItemNumber = lastItemNumber - 9;
+   const lastItemIndex = lastItemNumber - 1;
+   const firstItemIndex = firstItemNumber - 1;
+   
+   /*
+   Loop over items in the list parameter
+   -- If the index of a list item is >= the index of the first
+   item that should be shown on the page
+   -- && the list item index is <= the index of the last item
+   that should be shown on the page, show it
+   */
+  
+   $list.each(function(index) {
+      if (firstItemIndex <= index && index <= lastItemIndex) {
+         $(this).show();
+      } else {
+         $(this).hide();
+      }
+   });
+};
 
 /*** 
    Create the `appendPageLinks function` to generate, append, and add 
@@ -44,7 +66,11 @@ FSJS project 2 - List Filter and Pagination
 ***/
 
 
+const appendPageLinks = (list) => {
 
+};
 
 
 // Remember to delete the comments that came with this file, and replace them with your own code comments.
+
+$(showPage($('.student-list li'), pageNumber));
