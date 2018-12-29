@@ -21,7 +21,8 @@ function initApp() {
 
    console.log('initApp ran');
 
-   createStudentList()
+   appendSearchBox()
+      .then(createStudentList)
       .then(showPage)
       .then(appendPageLinks)
       .catch(function(e) {
@@ -29,15 +30,57 @@ function initApp() {
       });
 }
 
-const createStudentList = () => {
+const appendSearchBox = () => {
+   
+   console.log('appendSearchBox ran');
 
    return new Promise(function(resolve, reject) {
+
+      // create HTML for the search box
+      const searchBoxHTML = `
+         <div class="student-search">
+            <input placeholder="Search for students...">
+            <button>Search</button>
+         </div>
+      `;
+
+      // insert search box HTML into the DOM
+      $('h2').after(searchBoxHTML);
+
+      // get your page header (for event delegation)
+      const $pageHeader = $('.page-header');
+
+      let query = "";
+
+      // listen for the button to be clicked or for typing to happen
+      $pageHeader.on("click", "button", function(event) {
+         event.preventDefault();
+         console.log('button was clicked');
+         query = $('input').val();
+         console.log('The search term is: ' + query);
+      });
+      
+      $pageHeader.on("keyup", "input", function(event) {
+         event.preventDefault();
+         console.log('keyup happened');
+         query = $('input').val();
+         console.log('The search term is: ' + query);
+      });
+
+      resolve();
+      
+   });
+}
+
+const createStudentList = () => {
+
+   //return new Promise(function(resolve, reject) {
 
       console.log('createStudentList ran');
 
       const $list_ = $('.student-list li');
-      resolve ($list_);
-   });
+      return $list_;
+   //});
 }
 
 const showPage = (list, page) => {
@@ -68,7 +111,7 @@ const showPage = (list, page) => {
    });
 
    return list;
-};
+}
 
 const appendPageLinks = (list) => {
    console.log('createPageLinks ran');
@@ -95,7 +138,7 @@ const appendPageLinks = (list) => {
       }
       console.log(paginationLI);
       return paginationLI;
-   };
+   }
 
    let paginationAccumulator = "";
 
@@ -139,7 +182,7 @@ const appendPageLinks = (list) => {
       $(event.target).addClass("active");
    });
 
-};
+}
 
 $( window ).on( "load", function() {
    initApp();
