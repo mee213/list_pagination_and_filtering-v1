@@ -23,9 +23,7 @@ function initApp() {
 
    createStudentList()
       .then(showPage)
-      .then(createPageLinks)
       .then(appendPageLinks)
-      .then(listen)
       .catch(function(e) {
          console.log(e);
       });
@@ -72,7 +70,7 @@ const showPage = (list, page) => {
    return list;
 };
 
-const createPageLinks = (list) => {
+const appendPageLinks = (list) => {
    console.log('createPageLinks ran');
    //console.log(list);
    const $pageDiv = $('div.page');
@@ -115,29 +113,20 @@ const createPageLinks = (list) => {
       console.log(paginationAccumulator);
    }
 
-   return paginationAccumulator;
-};
-
-const appendPageLinks = (pageLinksHTML) => {
-   
    console.log('appendPageLinks ran');
    const $paginationUL = $('.pagination ul');
    console.log($paginationUL);
-
-   $paginationUL.append(pageLinksHTML);
-   return $paginationUL;
-};
-
-const listen = ($ULofPageLinks) => {
-   console.log('listen ran');
-   const $list = $('.student-list li');
-
-   $ULofPageLinks.on("click", "a", function(event) {
+   
+   // add the HTML to the DOM
+   $paginationUL.append(paginationAccumulator);
+   
+   // event listener for pagination links
+   $paginationUL.on("click", "a", function(event) {
       event.preventDefault();
       const pageNumber = $(event.target).text();
 
       // show the appropriate 10 students
-      showPage($list, pageNumber);
+      showPage(list, pageNumber);
 
       const $pageLinks = $('.pagination a');
 
@@ -148,8 +137,8 @@ const listen = ($ULofPageLinks) => {
 
       // add "active" class to link that was just clicked
       $(event.target).addClass("active");
-
    });
+
 };
 
 $( window ).on( "load", function() {
