@@ -130,6 +130,7 @@ const appendPageLinks = (pageLinksHTML) => {
 
 const listen = ($ULofPageLinks) => {
    console.log('listen ran');
+   const $list = $('.student-list li');
 
    $ULofPageLinks.on("click", "a", function(event) {
       event.preventDefault();
@@ -141,7 +142,9 @@ const listen = ($ULofPageLinks) => {
       const $pageLinks = $('.pagination a');
 
       // remove "active" class from every pagination link
-      $pageLinks.each( () => $(this).removeClass("active"));
+      $pageLinks.each(function() {
+         $(this).removeClass("active");
+      });
 
       // add "active" class to link that was just clicked
       $(event.target).addClass("active");
