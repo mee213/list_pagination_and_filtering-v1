@@ -19,6 +19,9 @@ const initApp = () => {
 
    console.log('initApp ran');
 
+   // create and append container for pagination links
+   $('div.page').append('<div class="pagination"><ul></ul></div>');
+
    // this shows full list, prior to any searches
    appendSearchBox()
       .then(createStudentList)
@@ -150,20 +153,16 @@ const showPage = (list, page) => {
 
 const appendPageLinks = (list) => {
    console.log('createPageLinks ran');
-   //console.log(list);
-   const $pageDiv = $('div.page');
    
    // calculate number of pages (round up for partial pages)
    const numberOfPages = Math.ceil(list.length / 10);
    console.log(numberOfPages);
 
-   // create and append container for pagination links
-   $pageDiv.append('<div class="pagination"><ul></ul></div>');
-
+   // create HTML for each LI, add class="active" only to 1st one
    const createPaginationLI = (k) => {
       console.log('k is: ' + k);
       let paginationLI = "";
-      // create HTML for each LI, add class="active" only to 1st one
+      
       if (k === 1) {
          console.log(k);
          paginationLI = `<li><a class="active" href="#">${k}</a></li>`;
@@ -196,7 +195,7 @@ const appendPageLinks = (list) => {
    console.log($paginationUL);
    
    // add the HTML to the DOM
-   $paginationUL.append(paginationAccumulator);
+   $paginationUL.html(paginationAccumulator);
    
    // event listener for pagination links
    $paginationUL.on("click", "a", function(event) {
@@ -222,15 +221,3 @@ const appendPageLinks = (list) => {
 $( window ).on( "load", function() {
    initApp();
 });
-
-
-
-
-
-// // event handler for clicks on pagination links
-
-   
-   /*** 
-      Create the `appendPageLinks function` to generate, append, and add 
-      functionality to the pagination buttons.
-   ***/
