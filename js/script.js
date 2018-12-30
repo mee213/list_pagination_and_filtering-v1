@@ -63,6 +63,10 @@ const appendSearchBox = ($fullList) => {
       const doSearch = (query) => {
          console.log('doSearch ran');
 
+         // remove previous event listeners from pagination links
+         // (to be re-generated per search results)
+         $('.pagination ul').off("click");
+
          // this creates a new jQuery selector similar to the
          // :contains selector except it is case-insensitive, from:
          // https://stackoverflow.com/questions/8746882/jquery-contains-selector-uppercase-and-lower-case-issue
@@ -226,7 +230,9 @@ const appendPageLinks = (list) => {
    $paginationUL.on("click", "a", function(event) {
       event.preventDefault();
       const pageNumber = $(event.target).text();
-
+      //let query = $('input').val();
+      console.log('pagination link was clicked');
+      console.log('list length is: ' + list.length);
       // show the appropriate 10 students
       showPage(list, pageNumber);
 
