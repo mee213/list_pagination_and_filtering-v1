@@ -1,23 +1,7 @@
 'use strict';
-/******************************************
-Treehouse Techdegree:
-FSJS project 2 - List Filter and Pagination
-******************************************/
-   
-/*** 
-   Add your global variables that store the DOM elements you will 
-   need to reference and/or manipulate. 
-   
-   But be mindful of which variables should be global and which 
-   should be locally scoped to one of the two main functions you're 
-   going to create. A good general rule of thumb is if the variable 
-   will only be used inside of a function, then it can be locally 
-   scoped to that function.
-***/
 
+// this function is called on page load, it all starts here
 const initApp = () => {
-
-   console.log('initApp ran');
 
    // get complete student list
    const $studentList = $('.student-list li');
@@ -30,7 +14,6 @@ const initApp = () => {
 
    // this shows full list, prior to any searches
    appendSearchBox($studentList)
-      //.then(createStudentList)
       .then(showPage)
       .then(appendPageLinks)
       .catch(function(e) {
@@ -38,11 +21,19 @@ const initApp = () => {
       });
 }
 
+// adds search box and event listeners for search box
+// as well as search functionality itself
+// also returns a promise to start the chain of 
+// initial page load prior to first search
 const appendSearchBox = ($fullList) => {
    
-   console.log('appendSearchBox ran');
-
    return new Promise(function(resolve, reject) {
+
+      // get your page header (for event delegation)
+      const $pageHeader = $('.page-header');
+
+      // declare query outside of event listener and doSearch function
+      let query = "";
 
       // create HTML for the search box
       const searchBoxHTML = `
@@ -55,13 +46,10 @@ const appendSearchBox = ($fullList) => {
       // insert search box HTML into the DOM
       $('h2').after(searchBoxHTML);
 
-      // get your page header (for event delegation)
-      const $pageHeader = $('.page-header');
-
-      let query = "";
-
+      // perform search using query captured from search box
+      // this returns a promise to start a new chain of page updates
+      // based on search results
       const doSearch = (query) => {
-         console.log('doSearch ran');
 
          // remove previous event listeners from pagination links
          // (to be re-generated per search results)
@@ -87,33 +75,32 @@ const appendSearchBox = ($fullList) => {
             // hide elements from the complete list based on search results
             $fullList.each(function(index) {
                if ($(this).has(`h3:icontains(${query})`).length > 0 || $(this).has(`.email:icontains(${query})`).length > 0) {
-                  console.log(index);
-                  console.log($(this));
                   $(this).show();
                } else {
-                  console.log(index);
                   $(this).hide();
                }
             });
             
-            console.log('search list length is: ' + $searchList.length);
+            // display a message to the user if there aren't any search results
             if ($searchList.length === 0) {
                $('.message').html('<p>The search has no results.</p>');
             } else {
                $('.message').empty();
             }
             
-            // only send search results to the next .then(), not the full list
+            // only send search results to the next .then() in the chain, not full list
             resolve($searchList);
          });
       }
 
-      // listen for the button to be clicked or for typing to happen
+      // listen for the button to be clicked for search
       $pageHeader.on("click", "button", function(event) {
          event.preventDefault();
-         console.log('button was clicked');
+         
+         // get search term from search box
          query = $('input').val();
-         console.log('The search term is: ' + query);
+         
+         // start the search and refresh the page accordingly
          doSearch(query)
             .then(showPage)
             .then(appendPageLinks)
@@ -122,11 +109,14 @@ const appendSearchBox = ($fullList) => {
             });
       });
       
+      // listen for typing to happen for search
       $pageHeader.on("keyup", "input", function(event) {
          event.preventDefault();
-         console.log('keyup happened');
+
+         // get search term from search box
          query = $('input').val();
-         console.log('The search term is: ' + query);
+         
+         // start the search and refresh the page accordingly
          doSearch(query)
             .then(showPage)
             .then(appendPageLinks)
@@ -135,93 +125,73 @@ const appendSearchBox = ($fullList) => {
             });
       });
 
+      // send the complete student list to the next .then()
+      // (in case of first load, ie, no search yet)
       resolve($fullList);
       
    });
 }
 
-const createStudentList = () => {
-
-   console.log('createStudentList ran');
-
-   const $list_ = $('.student-list li');
-   return $list_;
-}
-
+// take a list (complete, or filtered) and an optional page number
+// and display 10 results accordingly
+// if no page number, show first page
 const showPage = (list, page) => {
    
-   console.log('showPage ran');
-   console.log('list length is: ' + list.length);
    // if page was passed in, use it, otherwise, use 1
    // ie, nothing is passed in on first run (or a search),
    // so show first page, otherwise if pagination links are
    // clicked it will receive page argument from event listener
-   console.log('page argument is: ' + page);
    let thisPage = page ? page : 1;
-   console.log('thisPage is: ' + thisPage);
-   
+
+   // will use these to show 10 items according to page number
    const lastItemIndex = thisPage * 10 - 1;
    const firstItemIndex = thisPage * 10 - 10;
-
-   console.log(firstItemIndex);
-   console.log(lastItemIndex);
    
+   // only show the appropriate 10 items, hide the rest
    list.each(function(index) {
       if (firstItemIndex <= index && index <= lastItemIndex) {
-         console.log(index);
-         console.log($(this));
          $(this).show();
       } else {
-         console.log(index);
          $(this).hide();
       }
    });
 
+   // send the list to the next .then() in the promise chain
    return list;
 }
 
+// generate and append page links and add click event listeners to them
+// according to number of items in the list
 const appendPageLinks = (list) => {
-   console.log('createPageLinks ran');
    
    // calculate number of pages (round up for partial pages)
    const numberOfPages = Math.ceil(list.length / 10);
-   console.log(numberOfPages);
 
    // create HTML for each LI, add class="active" only to 1st one
    const createPaginationLI = (k) => {
-      console.log('k is: ' + k);
       let paginationLI = "";
       
       if (k === 1) {
-         console.log(k);
          paginationLI = `<li><a class="active" href="#">${k}</a></li>`;
       } else {
-         console.log(k);
          paginationLI = `<li><a href="#">${k}</a></li>`;
       }
-      console.log(paginationLI);
       return paginationLI;
    }
 
+   // initialize this to be added to later
    let paginationAccumulator = "";
 
    // create a long string of pagination links
    for (let i = 0; i < numberOfPages; ) {
-      console.log('i before increment is: ' + i);
       i += 1;
-      console.log('i after increment is: ' + i);
-      console.log('paginationAccumulator before increment is');
-      console.log(paginationAccumulator);
       const thisPageLink = createPaginationLI(i);
-      console.log('thisPageLink is ' + thisPageLink);
       paginationAccumulator += thisPageLink;
-      console.log('paginationAccumulator after increment is');
-      console.log(paginationAccumulator);
    }
 
-   console.log('appendPageLinks ran');
+   // select the pagination UL to append the pagination links
+   // and to use for its event listeners to bind to
    const $paginationUL = $('.pagination ul');
-   console.log($paginationUL);
    
    // add the HTML to the DOM
    $paginationUL.html(paginationAccumulator);
@@ -229,16 +199,15 @@ const appendPageLinks = (list) => {
    // event listener for pagination links
    $paginationUL.on("click", "a", function(event) {
       event.preventDefault();
+
+      // get the page number from the text of the pagination link
       const pageNumber = $(event.target).text();
-      //let query = $('input').val();
-      console.log('pagination link was clicked');
-      console.log('list length is: ' + list.length);
+      
       // show the appropriate 10 students
       showPage(list, pageNumber);
 
-      const $pageLinks = $('.pagination a');
-
       // remove "active" class from every pagination link
+      const $pageLinks = $('.pagination a');
       $pageLinks.each(function() {
          $(this).removeClass("active");
       });
@@ -249,6 +218,7 @@ const appendPageLinks = (list) => {
 
 }
 
+// wait for all the images etc to load before starting
 $( window ).on( "load", function() {
    initApp();
 });
