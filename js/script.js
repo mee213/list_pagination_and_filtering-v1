@@ -19,12 +19,14 @@ const initApp = () => {
 
    console.log('initApp ran');
 
-   // create and append container for pagination links
+   const $studentList = $('.student-list li');
+
+   // create and append container for pagination links (only happens once!)
    $('div.page').append('<div class="pagination"><ul></ul></div>');
 
    // this shows full list, prior to any searches
-   appendSearchBox()
-      .then(createStudentList)
+   appendSearchBox($studentList)
+      //.then(createStudentList)
       .then(showPage)
       .then(appendPageLinks)
       .catch(function(e) {
@@ -32,7 +34,7 @@ const initApp = () => {
       });
 }
 
-const appendSearchBox = () => {
+const appendSearchBox = ($fullList) => {
    
    console.log('appendSearchBox ran');
 
@@ -73,6 +75,17 @@ const appendSearchBox = () => {
                // the boolean tells .filter() whether it should include this li in the results or not
                return $( this ).has(`h3:icontains(${query})`).length > 0 || $( this ).has(`.email:icontains(${query})`).length > 0;
             });
+
+            $fullList.each(function(index) {
+               if ($(this).has(`h3:icontains(${query})`).length > 0 || $(this).has(`.email:icontains(${query})`).length > 0) {
+                  console.log(index);
+                  console.log($(this));
+                  $(this).show();
+               } else {
+                  console.log(index);
+                  $(this).hide();
+               }
+            });
             
             console.log('search list length is: ' + $searchList.length);
             
@@ -107,7 +120,7 @@ const appendSearchBox = () => {
             });
       });
 
-      resolve();
+      resolve($fullList);
       
    });
 }
@@ -123,13 +136,14 @@ const createStudentList = () => {
 const showPage = (list, page) => {
    
    console.log('showPage ran');
-
+   console.log('list length is: ' + list.length);
    // if page was passed in, use it, otherwise, use 1
    // ie, nothing is passed in on first run (or a search),
    // so show first page, otherwise if pagination links are
    // clicked it will receive page argument from event listener
+   console.log('page argument is: ' + page);
    let thisPage = page ? page : 1;
-   console.log(thisPage);
+   console.log('thisPage is: ' + thisPage);
    
    const lastItemIndex = thisPage * 10 - 1;
    const firstItemIndex = thisPage * 10 - 10;
