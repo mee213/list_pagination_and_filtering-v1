@@ -4,8 +4,6 @@ Treehouse Techdegree:
 FSJS project 2 - List Filter and Pagination
 ******************************************/
    
-
-
 /*** 
    Add your global variables that store the DOM elements you will 
    need to reference and/or manipulate. 
@@ -17,10 +15,11 @@ FSJS project 2 - List Filter and Pagination
    scoped to that function.
 ***/
 
-function initApp() {
+const initApp = () => {
 
    console.log('initApp ran');
 
+   // this shows full list, prior to any searches
    appendSearchBox()
       .then(createStudentList)
       .then(showPage)
@@ -52,12 +51,44 @@ const appendSearchBox = () => {
 
       let query = "";
 
+      const doSearch = (query) => {
+         console.log('doSearch ran');
+
+         // this creates a new jQuery selector similar to the
+         // :contains selector except it is case-insensitive, from:
+         // https://stackoverflow.com/questions/8746882/jquery-contains-selector-uppercase-and-lower-case-issue
+         jQuery.expr[':'].icontains = function(a, i, m) {
+            return jQuery(a).text().toUpperCase()
+               .indexOf(m[3].toUpperCase()) >= 0;
+         };
+
+         return new Promise(function(resolve, reject) {
+           
+            // filter student list by searching for query string in name OR email text
+            const $searchList = $('.student-list li').filter(function() {
+               // this callback returns a boolean if either the name (h3) or email contain the query string
+               // the boolean tells .filter() whether it should include this li in the results or not
+               return $( this ).has(`h3:icontains(${query})`).length > 0 || $( this ).has(`.email:icontains(${query})`).length > 0;
+            });
+            
+            console.log('search list length is: ' + $searchList.length);
+            
+            resolve($searchList);
+         });
+      }
+
       // listen for the button to be clicked or for typing to happen
       $pageHeader.on("click", "button", function(event) {
          event.preventDefault();
          console.log('button was clicked');
          query = $('input').val();
          console.log('The search term is: ' + query);
+         doSearch(query)
+            .then(showPage)
+            .then(appendPageLinks)
+            .catch(function(e) {
+               console.log(e);
+            });
       });
       
       $pageHeader.on("keyup", "input", function(event) {
@@ -65,6 +96,12 @@ const appendSearchBox = () => {
          console.log('keyup happened');
          query = $('input').val();
          console.log('The search term is: ' + query);
+         doSearch(query)
+            .then(showPage)
+            .then(appendPageLinks)
+            .catch(function(e) {
+               console.log(e);
+            });
       });
 
       resolve();
@@ -74,13 +111,10 @@ const appendSearchBox = () => {
 
 const createStudentList = () => {
 
-   //return new Promise(function(resolve, reject) {
+   console.log('createStudentList ran');
 
-      console.log('createStudentList ran');
-
-      const $list_ = $('.student-list li');
-      return $list_;
-   //});
+   const $list_ = $('.student-list li');
+   return $list_;
 }
 
 const showPage = (list, page) => {
@@ -88,8 +122,9 @@ const showPage = (list, page) => {
    console.log('showPage ran');
 
    // if page was passed in, use it, otherwise, use 1
-   // ie, nothing is passed in on first run, so show first page
-   // future runs will receive page argument from event listener
+   // ie, nothing is passed in on first run (or a search),
+   // so show first page, otherwise if pagination links are
+   // clicked it will receive page argument from event listener
    let thisPage = page ? page : 1;
    console.log(thisPage);
    
