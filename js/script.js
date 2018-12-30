@@ -19,10 +19,14 @@ const initApp = () => {
 
    console.log('initApp ran');
 
+   // get complete student list
    const $studentList = $('.student-list li');
 
-   // create and append container for pagination links (only happens once!)
+   // create and append container for pagination links
    $('div.page').append('<div class="pagination"><ul></ul></div>');
+
+   // create and append container for a message in case of no search results
+   $('.student-list').prepend('<div class="message"></div>');
 
    // this shows full list, prior to any searches
    appendSearchBox($studentList)
@@ -76,6 +80,7 @@ const appendSearchBox = ($fullList) => {
                return $( this ).has(`h3:icontains(${query})`).length > 0 || $( this ).has(`.email:icontains(${query})`).length > 0;
             });
 
+            // hide elements from the complete list based on search results
             $fullList.each(function(index) {
                if ($(this).has(`h3:icontains(${query})`).length > 0 || $(this).has(`.email:icontains(${query})`).length > 0) {
                   console.log(index);
@@ -88,7 +93,13 @@ const appendSearchBox = ($fullList) => {
             });
             
             console.log('search list length is: ' + $searchList.length);
+            if ($searchList.length === 0) {
+               $('.message').html('<p>The search has no results.</p>');
+            } else {
+               $('.message').empty();
+            }
             
+            // only send search results to the next .then(), not the full list
             resolve($searchList);
          });
       }
