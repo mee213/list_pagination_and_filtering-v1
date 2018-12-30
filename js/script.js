@@ -1,6 +1,6 @@
 'use strict';
 
-// this function is called on page load, it all starts here
+// this function is called when document ready, it all starts here
 const initApp = () => {
 
    // get complete student list
@@ -65,7 +65,7 @@ const appendSearchBox = ($fullList) => {
 
          return new Promise(function(resolve, reject) {
            
-            // filter student list by searching for query string in name OR email text
+            // create filtered list by searching for query string in name OR email text
             const $searchList = $('.student-list li').filter(function() {
                // this callback returns a boolean if either the name (h3) or email contain the query string
                // the boolean tells .filter() whether it should include this li in the results or not
@@ -73,6 +73,7 @@ const appendSearchBox = ($fullList) => {
             });
 
             // hide elements from the complete list based on search results
+            // since they were initially displayed
             $fullList.each(function(index) {
                if ($(this).has(`h3:icontains(${query})`).length > 0 || $(this).has(`.email:icontains(${query})`).length > 0) {
                   $(this).show();
@@ -183,8 +184,7 @@ const appendPageLinks = (list) => {
    let paginationAccumulator = "";
 
    // create a long string of pagination links
-   for (let i = 0; i < numberOfPages; ) {
-      i += 1;
+   for (let i = 1; i <= numberOfPages; i++) {
       const thisPageLink = createPaginationLI(i);
       paginationAccumulator += thisPageLink;
    }
@@ -215,10 +215,7 @@ const appendPageLinks = (list) => {
       // add "active" class to link that was just clicked
       $(event.target).addClass("active");
    });
-
 }
 
-// wait for all the images etc to load before starting
-$( window ).on( "load", function() {
-   initApp();
-});
+// document ready
+$(initApp);
